@@ -6,16 +6,18 @@ There is also a feature of adding biases to the neurons in the hidden layers and
 
 My Blog on [Machine Learning](https://juxt.pro/blog/posts/machine-learning.html) and [Deep Learning](https://juxt.pro/blog/posts/deep-learning.html) which go into more detail about Backpropagation and the Logist Function. 
 
-[Here](https://juxt.pro/blog/posts/neural-maths.html) is my blog on the Maths and ideas behind this Recursive Nueral Network.
+[Here](https://juxt.pro/blog/posts/neural-maths.html) is my blog on the Maths and ideas behind this Recursive Neural Network.
 
-You can find a detailed explaination of how I wrote this Neural Network [here]().
+You can find a detailed explaination of how I wrote this Neural Network [here](). (Coming Soon!)
+
+Any feedback or pull requests are much appreciated. 
 
 ## Installation:
 
 Add the following dependency to your `project.clj` or ` build.boot` file:
 
 ```
-[prop "1.0.0"]
+[prop "0.1.0"]
 ```
 
 ## Using the Neural Network
