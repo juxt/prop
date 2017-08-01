@@ -41,7 +41,7 @@ We have created a neural network that has an input of 3 neurons, `0`, `0`, `1` a
 
 `{0.1 0.11}` is the bias-weight and bias on the output neuron, the `key` being the bias-weight and the `val` being the bias value. Note that the number of key-value pairs in this vector must be equal to the number of values of the output vector.
 
-The final 3 arguments represent the 3 hidden layers. For another hidden layer simply add another map. `{0.3 0.33 :num 1}` tells us that this hidden layer has 1 nueron, and the bias-weight (`key`) is `0.3 and the bias value (`val`) is `0.33`. To add another neuron to this hidden layer, add another key-value pair and update the `:num`
+The final 3 arguments represent the 3 hidden layers. For another hidden layer simply add another map. `{0.3 0.33 :num 1}` tells us that this hidden layer has 1 nueron, and the bias-weight (`key`) is `0.3` and the bias value (`val`) is `0.33`. To add another neuron to this hidden layer, add another key-value pair and update the `:num`
 
 ### Training the Neural Network
 
@@ -63,7 +63,16 @@ Total error is:  0.10716610500800687 Interation is:  6
 Total error is:  0.09853811184099649 Interation is:  7
 Total error is:  0.09050009311610498 Interation is:  8
 Total error is:  0.0830615631948953 Interation is:  9
-{:output [0.1], :calc-output [0.49042726138540677], :output-errors [0.07621672321645435], :total-error 0.07621672321645435, :weights [[[0.1657184375225369] [0.638977649730074] [0.9575489538444313]] [[0.5309412992579472 0.8796629931788303]] [[0.6312939901955419 0.8674380319506446] [0.3587015139757296 0.3000730718479836]] [[0.7610399126810005] [0.1591502130712794]]]}
+{:output [0.1],
+ :calc-output [0.4723014944380909],
+ :output-errors [0.06930420138041792],
+ :total-error 0.06930420138041792,
+ :weights
+ [[[0.31937510630652] [0.5116851634216558] [0.8724308142797698]]
+  [[0.4074469683918901 0.9030234851054735]]
+  [[0.201389551317126 0.1031079822069274]
+   [0.09874808792495016 0.7984895019078827]]
+  [[0.49644754567036664] [0.2293279675945864]]]}
 ```
 
 Without Error and Iterations:
@@ -71,7 +80,16 @@ Without Error and Iterations:
 (prop/trained-nn nn 0.5 10 false)
 ```
 ```
-{:output [0.1], :calc-output [0.49042726138540677], :output-errors [0.07621672321645435], :total-error 0.07621672321645435, :weights [[[0.1657184375225369] [0.638977649730074] [0.9575489538444313]] [[0.5309412992579472 0.8796629931788303]] [[0.6312939901955419 0.8674380319506446] [0.3587015139757296 0.3000730718479836]] [[0.7610399126810005] [0.1591502130712794]]]}
+{:output [0.1],
+ :calc-output [0.4723014944380909],
+ :output-errors [0.06930420138041792],
+ :total-error 0.06930420138041792,
+ :weights
+ [[[0.31937510630652] [0.5116851634216558] [0.8724308142797698]]
+  [[0.4074469683918901 0.9030234851054735]]
+  [[0.201389551317126 0.1031079822069274]
+   [0.09874808792495016 0.7984895019078827]]
+  [[0.49644754567036664] [0.2293279675945864]]]}
 ```
 
 `nn` is the neural network we created. `0.5` is the learning rate (0.5 is often the default but the learning rate can be any number between 0 and 1). `10` is the number of iterations. `true/false` is whether we want the printlns or not.
