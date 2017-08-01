@@ -109,15 +109,15 @@
 
 (defn delta-value [weight {:keys [output] :as network}]
   (let [{:keys [delta-variables last-sig]} (delta-variables weight network)
-        firstx (first delta-variables)
-        lastx (last delta-variables)
-        middlex (butlast (rest delta-variables))
-        a (layer-eq firstx)
-        b (map (fn [x] (map (fn [xx] (output-eq xx output last-sig)) x)) lastx)
-        c (map (fn [x] (map (fn [xx] (map (fn [xxx] (layer-eq xxx)) xx)) x)) middlex)]
+        first-vars (first delta-variables)
+        last-vars (last delta-variables)
+        middle-vars (butlast (rest delta-variables))
+        a (layer-eq first-vars)
+        b (map (fn [x] (map (fn [xx] (output-eq xx output last-sig)) x)) last-vars)
+        c (map (fn [x] (map (fn [xx] (map (fn [xxx] (layer-eq xxx)) xx)) x)) middle-vars)]
     (cond
-      (and (nil? middlex) (= firstx lastx)) (output-eq lastx output last-sig)
-      (nil? middlex) (* a (first (map #(apply + %) b)))
+      (and (nil? middle-vars) (= first-vars last-vars)) (output-eq last-vars output last-sig)
+      (nil? middle-vars) (* a (first (map #(apply + %) b)))
       :else (* a (first (map #(apply + %) (reduce (fn [acc v] (M/* v (map #(apply + %) acc))) b (reverse c))))))))
 
 (defn new-weight [weight network learning-rate]
@@ -143,17 +143,18 @@
      :output-errors output-errors
      :total-error (apply + output-errors)}))
 
-(defn train [network learning-rate n]
+(defn train [network learning-rate num-of-iterations println?]
   (loop [x 0
          v network]
-    (if (>= x n)
+    (if (>= x num-of-iterations)
       v
       (recur (inc x)
              (let [{:keys [new-weights]} (new-network-weights v learning-rate)]
-               (println "Total error is: " (:total-error (-> v calc-sigmoid errors)) "x is: " x)
+               (when println?
+                 (println "Total error is: " (:total-error (-> v calc-sigmoid errors)) "Iteration is: " (inc x)))
                (assoc v :weights new-weights))))))
 
-(defn trained-nn [network learning-rate n]
-  (let [trained-network (train network learning-rate n)
+(defn trained-nn [network learning-rate n println?]
+  (let [trained-network (train network learning-rate n println?)
         errors (-> trained-network calc-sigmoid errors)]
     (assoc errors :weights (:weights network))))
