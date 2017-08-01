@@ -1,3 +1,5 @@
+;; Copyright © 2017, JUXT LTD.
+
 (ns prop.core
   (:require [clojure.core.matrix :as m]
             [clojure.core.matrix.operators :as M]
