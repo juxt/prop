@@ -1,4 +1,4 @@
-(defproject prop "0.1.0-SNAPSHOT"
+(defproject prop "0.1.0"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "The MIT License"
