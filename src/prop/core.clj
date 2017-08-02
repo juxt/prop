@@ -159,4 +159,4 @@
 (defn trained-nn [network learning-rate n println?]
   (let [trained-network (train network learning-rate n println?)
         errors (-> trained-network calc-sigmoid errors)]
-    (assoc errors :weights (:weights network))))
+    (assoc errors :weights (:weights trained-network))))

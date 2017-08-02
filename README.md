@@ -1,6 +1,6 @@
 # prop
 
-prop is a Clojure library for writing recursive neural networks based on Backpropagation and the Logist Function. It utitlises core.matrix to allow you to write a multi-layered nueral network with any number of nuerons in the hidden layers.
+prop is a Clojure library for writing recursive neural networks based on Backpropagation and the Logist Function. It utilises core.matrix to allow you to write a multi-layered nueral network with any number of nuerons in the hidden layers.
 
 There is also a feature of adding biases to the neurons in the hidden layers and the outputs. These biases are added by the user and range from 0 to 1, with 0 being no bias.
 
@@ -8,7 +8,7 @@ My Blog on [Machine Learning](https://juxt.pro/blog/posts/machine-learning.html)
 
 [Here](https://juxt.pro/blog/posts/neural-maths.html) is my blog on the Maths and ideas behind this Recursive Neural Network.
 
-You can find a detailed explaination of how I wrote this Neural Network [here](). (Coming Soon!)
+You can find a detailed explanation of how I wrote this Neural Network [here](). (Coming Soon!)
 
 Any feedback or pull requests are much appreciated. 
 
