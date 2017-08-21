@@ -16,7 +16,7 @@
        [(-> output-bias vals vec)])))
 
 (defn nn [input output output-bias & args]
-  (let [num-bias (into [] (for [arg args] (:num arg)))
+  (let [num-bias (mapv :num args)
         hidden-weights (->> num-bias (partition 2 1) (mapv (partial reduce rep)))
         output-weight (conj hidden-weights (rep (-> args last :num) (count output)))
         weights (cons (rep (count input) (-> args first :num)) output-weight)]
@@ -57,46 +57,54 @@
   (for [[x set1] (map-indexed vector vec)
         [y set2] (map-indexed vector set1)
         [z val] (map-indexed vector set2)
-        [z val] (map-indexed vector set2)
         :when (= number val)]
     [x y z]))
 
 (defn connector [values weights a b c]
-  [(reduce get weights [a b c]) (reduce get values [a b]) (reduce get values [(+ 1 a) c])])
+  [(reduce get weights [a b c])
+   (reduce get values [a b])
+   (reduce get values [(+ 1 a) c])])
 
 (defn links [{:keys [input bias weights bias-weights output] :as network}]
   (let [sig (cons input (:sig-values (calc-sigmoid network)))]
-    {:weight-links (map #(connector (vec sig) weights (-> % first first) (-> % first second) (-> % first last)) (map #(indexer weights %) (flatten weights)))
+    {:weight-links (mapv #(connector (vec sig)
+                                     weights
+                                     (-> % first first)
+                                     (-> % first second)
+                                     (-> % first last))
+                         (mapv #(indexer weights %) (flatten weights)))
      :sig sig}))
 
-(defn connection [num links]
-  (remove nil?
-          (map (fn [a]
-                 (when (not= () (filter #(= % num) a))
-                   a))
-               links)))
+(defn connection* [num links]
+  (filter (fn [a]
+            (some #(= % num) a))
+          links)) 
 
-(defn delta-variables [weight network]
-  (let [{:keys [weight-links sig]} (links network)
+(def connection (memoize connection*))
+
+(defn delta-variables [weight network links*]
+  (let [{:keys [weight-links sig]} links*
         output-sig (last sig)
         connect (list (connection weight weight-links))]
     {:delta-variables (if (some #(= (-> connect first first last) %) output-sig)
                         (mapv rest (first connect))
                         (loop [res (mapv rest (first connect))
                                c connect]
-                          (let [new-c (first (map (fn [x]
-                                                    (map (fn [cc] (let [woutput (last cc)
-                                                                        woutput-links (connection woutput weight-links)]
-                                                                    (filter #(= (get % 1) woutput) woutput-links)))
-                                                         x))
-                                                  c))
-                                new-res (conj
-                                          res
-                                          (map (fn [x]
-                                                 (map (fn [xx]
-                                                        [(first xx) (last xx)])
-                                                      x))
-                                               new-c))]
+                          (let [new-c #_(new-connection c weight-links)
+                                (first (map (fn [x]
+                                              (map (fn [cc] (let [woutput (last cc)
+                                                                  woutput-links (connection woutput weight-links)]
+                                                              (filter #(= (get % 1) woutput) woutput-links)))
+                                                   x))
+                                            c))
+                                new-res #_(new-result res new-c)
+                                (conj
+                                  res
+                                  (map (fn [x]
+                                         (map (fn [xx]
+                                                [(first xx) (last xx)])
+                                              x))
+                                       new-c))]
                             (if (some #(= (-> new-c first first last) %) output-sig)
                               new-res
                               (recur new-res
@@ -109,8 +117,8 @@
 (defn output-eq [[weight value] output last-sig]
   (* weight value (- 1 value) (- value (get output (.indexOf last-sig value)))))
 
-(defn delta-value [weight {:keys [output] :as network}]
-  (let [{:keys [delta-variables last-sig]} (delta-variables weight network)
+(defn delta-value [weight {:keys [output] :as network} links*]
+  (let [{:keys [delta-variables last-sig]} (delta-variables weight network links*)
         first-vars (first delta-variables)
         last-vars (last delta-variables)
         middle-vars (butlast (rest delta-variables))
@@ -122,15 +130,16 @@
       (nil? middle-vars) (* a (first (map #(apply + %) b)))
       :else (* a (first (map #(apply + %) (reduce (fn [acc v] (M/* v (map #(apply + %) acc))) b (reverse c))))))))
 
-(defn new-weight [weight network learning-rate]
-  (let [new-value (delta-value weight network)]
+(defn new-weight [weight network learning-rate links*]
+  (let [new-value (delta-value weight network links*)]
     (- weight (* learning-rate new-value))))
 
 (defn new-network-weights [network learning-rate]
-  {:new-weights (walk/postwalk (fn [x] (if (number? x)
-                                         (new-weight x network learning-rate)
-                                         x))
-                               (:weights network))})
+  (let [links* (links network)]
+    {:new-weights (walk/postwalk (fn [x] (if (number? x)
+                                           (new-weight x network learning-rate links*)
+                                           x))
+                                 (:weights network))}))
 
 (defn output-error [target output-sigmoid]
   (* 0.5 (- target output-sigmoid) (- target output-sigmoid)))
